@@ -5,13 +5,14 @@
 #avr-size --mcu=atmega328p --format=avr #  led.bin
 
 
+echo Compiling...
+avr-gcc $1 -o tools/a.out -mmcu=atmega328p -g -Os
 
-avr-gcc led.c -o tools/a.out -mmcu=atmega328p -g -Os
-avr-objcopy tools/a.out bin/led.bin -j .text -j .data -O binary --pad-to 0x8000
-
+echo Formatting bin-file...
+avr-objcopy tools/a.out bin/a.bin -j .text -j .data -O binary --pad-to 0x8000
 avr-size tools/a.out --mcu=atmega328p --format=avr
 
 
-#  Upload to TL866
-minipro --device "ATMEGA328P@DIP28" -w bin/led.bin
-minipro --device "ATMEGA328P@DIP28" -c config -w etc/fuses.conf
+echo Uploading to TL866...
+minipro --device "ATMEGA328P@DIP28" -w bin/a.bin
+
