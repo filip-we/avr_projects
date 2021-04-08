@@ -6,6 +6,10 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
+#include "usbdrv/usbdrv.h"
+
+#define USB_LED_OFF 0
+#define USB_LED_ON 1
 
 void initLcd(void);
 void sendChar(unsigned char msg);
@@ -15,6 +19,22 @@ int RegisterSelectPin = 0b00000001;
 int ReadWritePin = 0b00000010;
 int EnablePin = 0b00000100;
 
+char c1 = 'a'
+char c2 = 'b'
+
+USB_PUBLIC uchar usbFunctionSetup(uchar data[8]) {
+    usbRequest_t *rq = (void *)data; //cast data to correct type...
+
+    switch (rq->bRequest) {
+        case USB_LED_ON:
+            sendChar(c1);
+            return 0;
+        case USB_LED_OFF:
+            sendChar(c2);
+            return 0;
+    return 0;
+}
+
 int main(void) {
     //Port D is connected to the data-lines of the LCD
     DDRD = 0xff;
@@ -22,9 +42,18 @@ int main(void) {
     PORTB = 0b00000000;     //  Set control pins low
     DDRB = 0b00000111;      //  Set control to output
 
-    char tmp = 'a';
     initLcd();
-    sendChar(tmp);
+
+    usbInit();
+    usbDeviceDisconnect();
+    _delay_ms(500);
+    usbDeviceConnect();
+
+    char tmp = 'a';
+    while(1) {
+        usbPoll();
+    }
+    return 0;
 }
 
 void initLcd(void) {
