@@ -14,36 +14,48 @@
 // void initLcd(void);
 // void sendChar(unsigned char msg);
 
-int ledPin = 0b00001000;
+int ledPin = 0b00000001;
+int usbLedPin = 0b00001000;
 
 USB_PUBLIC uchar usbFunctionSetup(uchar data[8]) {
     usbRequest_t *rq = (void *)data; //cast data to correct type...
 
     switch (rq->bRequest) {
         case USB_LED_ON:
-            PORTD |= ledPin;
+            PORTD |= usbLedPin;
             return 0;
         case USB_LED_OFF:
-            PORTD &= ~ledPin;
+            PORTD &= ~usbLedPin;
             return 0;
     }
     return 0;
 }
 
-int main() {
-
+int main(void) {
+    PORTC = 0;
     PORTD = 0;
-    DDRD = ledPin;              // LED pin is the only pin set to output
+
+    DDRC = ledPin | usbLedPin;      // LED pins set to output
+    DDRD = ~USBMASK;
 
     usbInit();
     usbDeviceDisconnect();
-    PORTD |= ledPin;           // Blink LED
+    PORTD |= usbLedPin;         // Check that usbLedPin works
     _delay_ms(500);
+    PORTD &= ~usbLedPin;
     usbDeviceConnect();
-    PORTD &= ~ledPin;
 
     while(1) {
         usbPoll();
+        PORTC = ledPin;           // Blink LED
+        _delay_ms(50);
+        PORTC = 0b00000000;
+        _delay_ms(50);
+
+        PORTC = ledPin;           // Blink LED
+        _delay_ms(500);
+        PORTC = 0b00000000;
+        _delay_ms(500);
     }
     return 0;
 }

@@ -1,4 +1,8 @@
 /temp
+/src/usbdrv
+/src/main.bin
+/src/main.o
 
 *.swp
 a.out
+

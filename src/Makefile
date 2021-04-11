@@ -48,3 +48,8 @@ main.bin:	$(OBJECTS)
 main.hex:	main.bin
 	rm -f main.hex main.eep.hex
 	avr-objcopy -j .text -j .data -O binary --pad-to 0x8000 --gap-fill 0x00 main.bin ../bin/main.bin
+
+upload:
+	minipro --device "ATMEGA328P@DIP28" -w ../bin/main.bin
+	minipro --device "ATMEGA328P@DIP28" -c config -w ../etc/fuses.conf
+
