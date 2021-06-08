@@ -1,7 +1,7 @@
-/temp
-/src/usbdrv
-/src/main.bin
-/src/main.o
+/v_usb/temp
+/v_usb/src/usbdrv
+/v_usb/src/main.bin
+/v_usb/src/main.o
 
 *.swp
 a.out
